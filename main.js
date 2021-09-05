@@ -1,18 +1,28 @@
-const mysql = require('mysql')
+const mysql = require('mysql2')
+const express = require('express')
 const inquirer = require('inquirer')
+const PORT = process.env.PORT || 3001
+const app = express()
 
-const connections = mysql.createConnection({
-    host: 'localhost',
-    port: '3301',
-    user: 'root',
-    password: '160239',
-    database: 'employee_tracker_db'
+app.use(express.urlencoded({ extended: false }))
+app.use(express.json())
+
+const db = mysql.createConnection(
+    {
+        host: 'localhost',
+        user: 'root',
+        password: '160239',
+        database: 'employee_tracker_db'
+    },
+    console.log(`Connected to the employee_tracker_db.`)
+)
+
+app.use((req, res) => {
+    res.status(404).end()
 })
 
-connection.connect(function(err){
-    if (err) throw err
-    console.lof('Connected')
-    runPrompt()
+app.listen(PORT, () => {
+    console.log(`Server running on ${PORT}`)
 })
 
 function runPrompt(){
