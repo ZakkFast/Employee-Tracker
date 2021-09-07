@@ -4,6 +4,8 @@ const inquirer = require('inquirer')
 require('console.table')
 let roleArr = []
 let managerArr = []
+let departmentArr = []
+let employeeArr = []
 
 const PORT = process.env.PORT || 3001
 const app = express()
@@ -83,9 +85,45 @@ function runPrompt(){
     })
 }
 
-// function selectRole() 
+function selectRole() {
+    db.query("SELECT * FROM roles", (err, res) => {
+        if (err) throw err
+        for (i = 0; i < res.length; i++) {
+            roleArr.push(res[i].title)
+        }
+    })
+    return roleArr
+}
 
-// function selectManager()
+function selectManager() {
+    db.query("SELECT first_name, last_name FROM employee WHERE manager_id IS NULL", (err, res) => {
+        if (err) throw err
+        for (i = 0; i < res.length; i++) {
+            managerArr.push(res[i].first_name)
+        }
+    })
+    return managerArr
+}
+
+function selectEmployee() {
+    db.query("SELECT last_name FROM employee", (err, res) => {
+        if(err) throw err
+        for (i = 0; i < res.length; i++) {
+            employeeArr.push(res[i].first_name)
+        }
+    })
+    return employeeArr
+}
+
+function selectDepartment() {
+    db.query("SELECT id FROM department", (err, res) => {
+        if(err) throw err
+        for (i = 0; i < res.length; i++) {
+            departmentArr.push(res[i].name)
+        }
+    })
+}
+
 
 function viewAllDepartments() {
     db.query("SELECT department.name AS Department, department.id AS 'Department #' FROM department;", 
@@ -97,7 +135,7 @@ function viewAllDepartments() {
   }
 
   function viewAllRoles() {
-    db.query("SELECT roles.id AS ID, roles.title AS Position, department.name AS Department FROM roles INNER JOIN department on department.id = roles.department_id;",
+    db.query("SELECT roles.id AS ID, roles.title AS Position, department.name AS Department FROM roles LEFT JOIN department on department.id = roles.department_id;",
     function(err, res){
         if (err) throw err
         console.table(res)
@@ -119,7 +157,7 @@ function addDepartment() {
     inquirer.prompt([
         {
           name: "name",
-          message: "What is the name of the Department you would like to add?"
+          message: "What is the ID of the Department you would like to add?"
         }
     ]).then(function(res) {
         var query = db.query(
@@ -147,13 +185,20 @@ function addDepartment() {
               {
                   name: 'salary',
                   message: `What is the salary for this position?`
+              },
+              {
+                  name: "department",
+                  type: "choices",
+                  message: 'What is the department the role belongs to?',
+                  choices: selectDepartment()
               }
           ]).then((res) => {
               db.query(
                   "INSERT INTO roles SET ?",
                   {
                       title: res.title,
-                      salary: res.salary
+                      salary: res.salary,
+                      department_id: res.department
                   },
                   (err) => {
                       if (err) throw err
@@ -184,18 +229,21 @@ function addDepartment() {
           {
               name: 'manager',
               type: 'rawlist',
-              message: "Who is the employee's manager?"
+              message: "Who is the employee's manager?",
+              choices: selectManager()
           }
       ]).then((val) => {
-          var roleid = selectRole(indexOf)(val.role) + 1
-          var managerid = selectManager()(indexOf)(val.choice) + 1
+          var roleid = selectRole().indexOf(val.role) + 1
+          var managerid = selectManager().indexOf(val.manager) + 1
+          console.log(val.role)
+          console.log(val.manager)
           db.query(
               "INSERT INTO employee SET ?",
               {
                   first_name: val.firstname,
                   last_name: val.lastname,
                   manager_id: managerid,
-                  role_id: roleid
+                  roles_id: roleid
               },(err) => {
                   if (err) throw err
                   console.table(val)
@@ -205,8 +253,71 @@ function addDepartment() {
       })
   }
 
-//   function updateAnEmployeeRole()
+//   function selectEmployee() {
+//     db.query("SELECT last_name FROM employee", (err, res) => {
+//         if(err) throw err
+//         for (i = 0; i < res.length; i++) {
+//             employeeArr.push(res[i].last_name)
+//         }
+//     })
+//     return employeeArr
+// }
 
+
+// function selectEmployee() {
+//     db.query("SELECT first_name, last_name FROM employee", (err, res) => {
+//         if (err) throw err
+//         for (i = 0; i < res.length; i++) {
+//             employeeArr.push(res[i].first_name)
+//         }
+//     })
+//     return employeeArr
+// }
+
+  
+function updateAnEmployeeRole() {
+    db.query("SELECT employee.last_name, roles.title FROM employee JOIN roles ON employee.roles_id = roles.id;", function(err, res) {
+     if (err) throw err
+    inquirer.prompt([
+          {
+            name: "lastName",
+            type: "rawlist",
+            choices: function() {
+              var lastName = [];
+              for (var i = 0; i < res.length; i++) {
+                lastName.push(res[i].last_name);
+              }
+              return lastName;
+            },
+            message: "What is the Employee's last name? ",
+          },
+          {
+            name: "roles",
+            type: "rawlist",
+            message: "What is the Employees new title? ",
+            choices: selectRole()
+          },
+      ]).then(function(val) {
+        var roleId = selectRole().indexOf(val.role) + 1
+        db.query("UPDATE employee SET WHERE ?", 
+        {
+          last_name: val.lastName
+           
+        }, 
+        {
+          roles_id: roleId
+           
+        }, 
+        function(err){
+            if (err) throw err
+            console.table(val)
+            runPrompt()
+        })
+  
+    });
+  });
+
+  }
   
 function exit(){
     console.log('Goodbye!')
