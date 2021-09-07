@@ -292,27 +292,21 @@ function updateAnEmployeeRole() {
             message: "What is the Employee's last name? ",
           },
           {
-            name: "roles",
+            name: "role",
             type: "rawlist",
             message: "What is the Employees new title? ",
             choices: selectRole()
           },
       ]).then(function(val) {
-        var roleId = selectRole().indexOf(val.role) + 1
-        db.query("UPDATE employee SET WHERE ?", 
-        {
-          last_name: val.lastName
-           
-        }, 
-        {
-          roles_id: roleId
-           
-        }, 
+        console.log(val.role)
+        console.log(val.lastName)
+        var roleId = selectRole().indexOf(val.role) + 1 //db.query("UPDATE employee SET roles_id = ? WHERE last_name = ?", [roleId, val.lastName])
+        db.query("UPDATE employee SET roles_id =? WHERE last_name =?", [roleId, val.lastName]),
         function(err){
             if (err) throw err
             console.table(val)
             runPrompt()
-        })
+        }
   
     });
   });
