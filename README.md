@@ -8,14 +8,14 @@
   - [Installation](#installation)
   - [Usage](#usage)
   - [Contribution](#contribution)
-  - [Testing](#testing)
   - [Additional Info](#questions)
 
   ### Description:
 
   The following app is used to track employees in a database, allowing you to view, create and update roles, departments, and employee info. 
 
-  <img src="./public\assets\imgs\noteTaker.gif">
+  Please follow this link to watch a video of the app doing it's thing. (>'.')><a href='https://youtu.be/Mh-i3Sydh24'> Video </a><('.'<)
+  
 
   ### Installation:
 
@@ -23,11 +23,7 @@
 
   ### Usage:
 
-  Here are the links for the code and deployed application. 
-
-  Please follow this link for the live deployment of the app: (>'.')><a href='https://yunowork.herokuapp.com/'> Live Deployment </a><('.'<)
-
-  Or follow this link to go to the Git repo: (>'.')><a href='https://github.com/ZakkFast/GreatScott'> Git Repo </a><('.'<)
+  Please follow this link to go to the Git repo: (>'.')><a href='https://github.com/ZakkFast/GreatScott'> Git Repo </a><('.'<)
 
   ## License:
 
