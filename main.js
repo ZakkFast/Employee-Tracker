@@ -1,17 +1,11 @@
-const mysql = require("mysql2");
-const express = require("express");
-const inquirer = require("inquirer");
-require("console.table");
-let roleArr = [];
-let managerArr = [];
-let departmentArr = [];
-let employeeArr = [];
-
-const PORT = process.env.PORT || 3001;
-const app = express();
-
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
+const mysql = require("mysql2")
+const express = require("express")
+const inquirer = require("inquirer")
+require("console.table")
+let roleArr = []
+let managerArr = []
+let departmentArr = []
+let employeeArr = []
 
 const db = mysql.createConnection(
   {
@@ -154,6 +148,7 @@ function viewAllRoles() {
 function viewAllEmployees() {
   db.query(
     "SELECT employee.id AS ID, CONCAT(employee.first_name, ' ' ,employee.last_name) AS Employee, department.name AS Department, roles.title AS Position, roles.salary AS Salary, CONCAT(e.first_name, ' ' ,e.last_name) AS Manager FROM employee INNER JOIN roles on roles.id = employee.roles_id INNER JOIN department on department.id = roles.department_id left join employee e on employee.manager_id = e.id;",
+    //switch to arrow function
     function (err, res) {
       if (err) throw err;
       console.table(res);
